@@ -18,7 +18,7 @@ const App = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-2 cursor-pointer" onClick={() => setCurrentPage('home')}>
-            <Shield className="h-8 w-8 text-cyan-400" />
+            <img src="/logo.png" alt="Itara Pathos IT Logo" className="h-24 w-24 object-contain" />
             <div>
               <h1 className="text-xl font-bold">Itara Pathos IT</h1>
               <p className="text-xs text-cyan-400">Providing a secure internet</p>
@@ -160,7 +160,7 @@ const App = () => {
             </div>
             <div className="bg-gradient-to-br from-cyan-600 to-cyan-800 p-8 rounded-lg shadow-xl">
               <div className="text-center">
-                <Shield className="h-24 w-24 text-white mx-auto mb-4 opacity-90" />
+                <img src="/sellamonlinelogo2.png" alt="Sellam Online logo" className="h-24px w-24px text-white mx-auto mb-4 opacity-90" />
                 <h3 className="text-2xl font-bold mb-2">Coming Soon</h3>
                 <p className="text-cyan-100">A new standard for secure online commerce in Africa</p>
               </div>
@@ -230,11 +230,11 @@ const App = () => {
         <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-8">
           <div className="md:flex">
             <div className="md:w-1/3 bg-gradient-to-br from-cyan-600 to-cyan-800 p-12 flex items-center justify-center">
-              <Shield className="h-32 w-32 text-white" />
+              <a href="www.sellamonline.com"><img src="/sellamonlinelogo2.png" alt="Sellam Online logo" className="h-24px w-24px text-white mx-auto mb-4 opacity-90" /></a>
             </div>
             <div className="md:w-2/3 p-8">
               <div className="flex items-center gap-3 mb-4">
-                <h2 className="text-3xl font-bold text-slate-900">Sellam Online</h2>
+                <a href="www.sellamonline.com"><h2 className="text-3xl font-bold text-slate-900">Sellam Online</h2></a>
                 <span className="bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-sm font-semibold">
                   Coming Soon
                 </span>
@@ -378,14 +378,14 @@ const App = () => {
                   <Mail className="h-6 w-6 text-cyan-600 mt-1" />
                   <div>
                     <h3 className="font-bold text-slate-900 mb-1">Email</h3>
-                    <p className="text-gray-600">info@itarapathos.com</p>
+                    <p className="text-gray-600">itarapathos@gmail.com</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
                   <Phone className="h-6 w-6 text-cyan-600 mt-1" />
                   <div>
                     <h3 className="font-bold text-slate-900 mb-1">Phone</h3>
-                    <p className="text-gray-600">+234 XXX XXX XXXX</p>
+                    <p className="text-gray-600">+234 816 6435 844</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
@@ -456,7 +456,7 @@ const App = () => {
         <div className="grid md:grid-cols-4 gap-8 mb-8">
           <div>
             <div className="flex items-center space-x-2 mb-4">
-              <Shield className="h-8 w-8 text-cyan-400" />
+              <img src="/logo.png" alt="Itara Pathos IT Logo" className="h-24 w-24 object-contain" />
               <div>
                 <h3 className="font-bold text-lg">Itara Pathos IT</h3>
                 <p className="text-xs text-cyan-400">Providing a secure internet</p>
@@ -478,18 +478,19 @@ const App = () => {
           <div>
             <h4 className="font-bold mb-4">Our Services</h4>
             <ul className="space-y-2 text-gray-400 text-sm">
-              <li>Secure Applications</li>
+              <li>Dev. Secure Applications</li>
               <li>Web Solutions</li>
               <li>Technical Consulting</li>
               <li>Security Audits</li>
+              <li>AI Solutions</li>
             </ul>
           </div>
           <div>
             <h4 className="font-bold mb-4">Contact</h4>
             <ul className="space-y-2 text-gray-400 text-sm">
               <li>Lagos, Nigeria</li>
-              <li>info@itarapathos.com</li>
-              <li>+234 XXX XXX XXXX</li>
+              <li>itarapathos@gmail.com</li>
+              <li>+234 816 643 5844</li>
             </ul>
           </div>
         </div>
