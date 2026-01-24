@@ -1,70 +1,187 @@
-# Getting Started with Create React App
+# Itara Pathos IT Nig Ltd - Official Website
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Official website for Itara Pathos IT Nig Ltd, an IT company dedicated to producing secure applications and products for the African market.
+
+## About
+
+Itara Pathos IT Nig Ltd is committed to **"Providing a secure internet"** across Africa. We build applications and platforms that prioritize user security without compromising functionality or ease of use.
+
+## Current Project
+
+We are currently developing **Sellam.online**, a secure marketplace platform that provides a safe space for Africans to buy and sell used products without fear of fraud.
+
+## Website Features
+
+- **Homepage**: Company overview and featured project showcase
+- **About Us**: Company mission, values, and commitment to security
+- **Projects**: Detailed information about Sellam Online and future products
+- **Blog**: Industry insights, security tips, and company updates
+- **Contact**: Get in touch form and company contact information
+
+## Tech Stack
+
+### Frontend
+- **React** - JavaScript library for building user interfaces
+- **Tailwind CSS** - Utility-first CSS framework for styling
+- **Lucide React** - Icon library
+
+### Backend (Coming Soon)
+- **Node.js** - JavaScript runtime
+- **Express** - Web application framework
+- **MongoDB** - NoSQL database
+
+## Getting Started
+
+### Prerequisites
+
+Make sure you have the following installed on your machine:
+- Node.js (v14 or higher)
+- npm (comes with Node.js)
+- Git
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/AaronTosyne/itara-pathos-website.git
+   ```
+
+2. Navigate to the project directory:
+   ```bash
+   cd itara-pathos-website
+   ```
+
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+4. Start the development server:
+   ```bash
+   npm start
+   ```
+
+5. Open your browser and visit `http://localhost:3000`
 
 ## Available Scripts
 
 In the project directory, you can run:
 
 ### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Runs the app in development mode. Open [http://localhost:3000](http://localhost:3000) to view it in your browser. The page will reload when you make changes.
 
 ### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Launches the test runner in interactive watch mode.
 
 ### `npm run build`
+Builds the app for production to the `build` folder. It correctly bundles React in production mode and optimizes the build for the best performance.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Project Structure
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```
+itara-pathos-website/
+├── public/
+│   ├── index.html
+│   └── ...
+├── src/
+│   ├── App.js          # Main application component
+│   ├── index.js        # Entry point
+│   ├── index.css       # Global styles with Tailwind directives
+│   └── ...
+├── .env                # Environment variables (not tracked in Git)
+├── .gitignore          # Files and folders to ignore
+├── package.json        # Project dependencies and scripts
+├── tailwind.config.js  # Tailwind CSS configuration
+└── README.md           # Project documentation
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Configuration
 
-### `npm run eject`
+### Tailwind CSS
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+The project uses Tailwind CSS v3. Configuration can be found in `tailwind.config.js`. To customize the design system:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+1. Open `tailwind.config.js`
+2. Modify the `theme` object to extend or override default values
+3. Restart the development server
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### Environment Variables
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Create a `.env` file in the root directory for environment-specific variables:
 
-## Learn More
+```
+DISABLE_ESLINT_PLUGIN=true
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Note: Never commit the `.env` file to version control. It's already included in `.gitignore`.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Deployment
 
-### Code Splitting
+### Build for Production
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+```bash
+npm run build
+```
 
-### Analyzing the Bundle Size
+This creates an optimized production build in the `build` folder.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### Deploy to Hosting Services
 
-### Making a Progressive Web App
+The build folder can be deployed to any static hosting service:
+- **Vercel**: Connect your GitHub repo and deploy automatically
+- **Netlify**: Drag and drop the build folder or connect via Git
+- **GitHub Pages**: Use `gh-pages` package for deployment
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+We are probabaly using **Hostinger**
 
-### Advanced Configuration
+## Roadmap
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+- [x] Design and implement frontend
+- [x] Set up responsive navigation
+- [x] Create homepage with hero section
+- [x] Build About Us page
+- [x] Develop Projects showcase page
+- [x] Add Blog section
+- [x] Create Contact form
+- [ ] Build backend API with Express
+- [ ] Set up MongoDB database
+- [ ] Implement blog post management
+- [ ] Add contact form submission handling
+- [ ] Implement user authentication for admin panel
+- [ ] Deploy to production
 
-### Deployment
+## Contributing
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+We welcome contributions! If you'd like to contribute to this project:
 
-### `npm run build` fails to minify
+1. Fork the repository
+2. Create a new branch (`git checkout -b feature/your-feature-name`)
+3. Make your changes
+4. Commit your changes (`git commit -m 'Add some feature'`)
+5. Push to the branch (`git push origin feature/your-feature-name`)
+6. Open a Pull Request
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Security
+
+Security is at the core of everything we do. If you discover a security vulnerability, please email us at itarapathos@gmail.com instead of using the issue tracker.
+
+## License
+
+This project is proprietary and confidential. Unauthorized copying, distribution, or use of this software is strictly prohibited.
+
+## Contact
+
+**Itara Pathos IT Nig Ltd**
+- Website: [www.itara-pathos.com]
+- Email:itarapathos@gmail.com
+- Location: Lagos, Nigeria
+
+## Acknowledgments
+
+- Design inspiration from modern IT security companies
+- Icons provided by [Lucide](https://lucide.dev/)
+- Built with [Create React App](https://create-react-app.dev/)
+
+---
+
+**"Providing a secure internet"** - Itara Pathos IT Nig Ltd © 2026
