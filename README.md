@@ -61,7 +61,27 @@ Make sure you have the following installed on your machine:
    npm start
    ```
 
-5. Open your browser and visit `http://localhost:3000`
+5. Create environment variables files:
+
+   **Backend (.env):**
+```bash
+   cd server
+   cp .env.example .env
+```
+   
+   Then edit `server/.env` and add your actual:
+   - MongoDB connection string
+   - JWT secret key
+
+   **Frontend (.env):**
+```bash
+   cd ../client
+   cp .env.example .env
+```
+   
+   Edit if needed for your API URL.
+
+6. Open your browser and visit `http://localhost:3000`
 
 ## Available Scripts
 
