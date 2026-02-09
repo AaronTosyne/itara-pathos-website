@@ -8,13 +8,16 @@ const {
   deleteContact
 } = require('../controllers/contactController');
 
-// Public route
+// Import auth middleware
+const { protect, authorize } = require('../middleware/auth');
+
+// Public route (anyone can submit contact form)
 router.post('/', createContact);
 
-// Admin routes (we'll add auth middleware later)
-router.get('/', getContacts);
-router.get('/:id', getContact);
-router.put('/:id/read', toggleRead);
-router.delete('/:id', deleteContact);
+// Protected admin routes (only admins can view submissions)
+router.get('/', protect, authorize('admin'), getContacts);
+router.get('/:id', protect, authorize('admin'), getContact);
+router.put('/:id/read', protect, authorize('admin'), toggleRead);
+router.delete('/:id', protect, authorize('admin'), deleteContact);
 
 module.exports = router;

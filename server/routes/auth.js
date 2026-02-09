@@ -6,11 +6,14 @@ const {
   getMe
 } = require('../controllers/authController');
 
+// Import auth middleware
+const { protect, authorize } = require('../middleware/auth');
+
 // Public routes
-router.post('/register', register);
 router.post('/login', login);
 
-// Private route (we'll add auth middleware later)
-router.get('/me', getMe);
+// Protected routes
+router.post('/register', protect, authorize('admin'), register); // Only admins can create new admins
+router.get('/me', protect, getMe);
 
 module.exports = router;

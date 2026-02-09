@@ -50,7 +50,7 @@ postSchema.pre('save', function(next) {
       .replace(/-+/g, '-')
       .trim();
   }
-  next();
+  // next();
 });
 
 module.exports = mongoose.model('Post', postSchema);

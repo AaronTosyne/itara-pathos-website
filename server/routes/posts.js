@@ -10,15 +10,18 @@ const {
   deletePost
 } = require('../controllers/postController');
 
-// Public routes
+// Import auth middleware
+const { protect, authorize } = require('../middleware/auth');
+
+// Public routes (no authentication required)
 router.get('/', getPosts);
 router.get('/:id', getPost);
 router.get('/slug/:slug', getPostBySlug);
 
-// Admin routes (we'll add auth middleware later)
-router.get('/admin/all', getAllPosts);
-router.post('/', createPost);
-router.put('/:id', updatePost);
-router.delete('/:id', deletePost);
+// Protected admin routes (authentication required)
+router.get('/admin/all', protect, authorize('admin', 'editor'), getAllPosts);
+router.post('/', protect, authorize('admin', 'editor'), createPost);
+router.put('/:id', protect, authorize('admin', 'editor'), updatePost);
+router.delete('/:id', protect, authorize('admin'), deletePost);
 
 module.exports = router;
