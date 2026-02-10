@@ -8,6 +8,12 @@ const App = () => {
   const [blogPosts, setBlogPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedPost, setSelectedPost] = useState(null);
+
+  // Scroll to top when page changes
+useEffect(() => {
+  window.scrollTo(0, 0);
+}, [currentPage, selectedPost]);
 
   // Fetch blog posts when component mounts
   useEffect(() => {
@@ -221,12 +227,15 @@ const App = () => {
                 day: 'numeric'
               })}
             </p>
-            <button 
-              onClick={() => setCurrentPage('blog')}
-              className="text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-2"
-            >
-              Read Full Article <ChevronRight size={20} />
-            </button>
+              <button 
+                onClick={() => {
+                  setSelectedPost(blogPosts[0]);
+                  setCurrentPage('blog-detail');
+                }}
+                className="text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-2"
+              >
+                Read Full Article <ChevronRight size={20} />
+              </button>
           </>
         ) : (
           <p className="text-gray-300">Loading latest posts...</p>
@@ -433,9 +442,15 @@ const App = () => {
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-slate-900">{post.title}</h3>
                 <p className="text-gray-600 mb-4">{post.excerpt}</p>
-                <button className="text-cyan-600 hover:text-cyan-700 font-semibold flex items-center gap-1">
-                  Read More <ChevronRight size={16} />
-                </button>
+                  <button
+                    onClick={() => {
+                      setSelectedPost(post);
+                      setCurrentPage('blog-detail');
+                    }}
+                    className="text-cyan-600 hover:text-cyan-700 font-semibold flex items-center gap-1"
+                  >
+                    Read More <ChevronRight size={16} />
+                  </button>
               </div>
             </article>
           ))}
@@ -614,16 +629,95 @@ const App = () => {
     </footer>
   );
 
-  const renderPage = () => {
-    switch(currentPage) {
-      case 'home': return <HomePage />;
-      case 'about': return <AboutPage />;
-      case 'projects': return <ProjectsPage />;
-      case 'blog': return <BlogPage />;
-      case 'contact': return <ContactPage />;
-      default: return <HomePage />;
-    }
-  };
+const BlogPostDetail = ({ post }) => {
+  return (
+    <div className="py-16 bg-white">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Back button */}
+        <button
+          onClick={() => {
+            setSelectedPost(null);
+            setCurrentPage('blog');
+          }}
+          className="flex items-center gap-2 text-cyan-600 hover:text-cyan-700 mb-8 font-semibold"
+        >
+          <ChevronRight className="rotate-180" size={20} />
+          Back to Blog
+        </button>
+
+        {/* Category and Date */}
+        <div className="flex items-center gap-3 mb-4">
+          <span className="bg-cyan-600 text-white px-4 py-1 rounded-full text-sm font-semibold">
+            {post.category}
+          </span>
+          <span className="text-gray-500">
+            {new Date(post.createdAt).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })}
+          </span>
+        </div>
+
+        {/* Title */}
+        <h1 className="text-4xl md:text-5xl font-bold mb-6 text-slate-900">
+          {post.title}
+        </h1>
+
+        {/* Author */}
+        <p className="text-gray-600 mb-8">
+          By {post.author || 'Itara Pathos IT'}
+        </p>
+
+        {/* Divider */}
+        <hr className="border-gray-200 mb-8" />
+
+        {/* Content */}
+        <div className="prose prose-lg max-w-none">
+          {post.content.split('\n\n').map((paragraph, index) => {
+            // Skip empty paragraphs
+            if (!paragraph.trim()) return null;
+            
+            return (
+              <p key={index} className="mb-6 text-gray-700 text-lg leading-relaxed">
+                {paragraph}
+              </p>
+            );
+          })}
+        </div>
+
+        {/* Divider */}
+        <hr className="border-gray-200 mt-12 mb-8" />
+
+        {/* Back to blog button */}
+        <div className="text-center">
+          <button
+            onClick={() => {
+              setSelectedPost(null);
+              setCurrentPage('blog');
+            }}
+            className="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-3 rounded-lg font-semibold inline-flex items-center gap-2"
+          >
+            <ChevronRight className="rotate-180" size={20} />
+            Back to All Posts
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};  
+
+const renderPage = () => {
+  switch(currentPage) {
+    case 'home': return <HomePage />;
+    case 'about': return <AboutPage />;
+    case 'projects': return <ProjectsPage />;
+    case 'blog': return <BlogPage />;
+    case 'blog-detail': return selectedPost ? <BlogPostDetail post={selectedPost} /> : <BlogPage />;
+    case 'contact': return <ContactPage />;
+    default: return <HomePage />;
+  }
+};
 
   return (
     <div className="min-h-screen bg-white">
