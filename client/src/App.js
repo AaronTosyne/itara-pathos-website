@@ -1,9 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Shield, Lock, Globe, ChevronRight, Mail, Phone, MapPin, Menu, X, Code, Users, Target, Award } from 'lucide-react';
+import { postsAPI, contactAPI } from './services/api';
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState('home');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [blogPosts, setBlogPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch blog posts when component mounts
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        setLoading(true);
+        const response = await postsAPI.getAll();
+        setBlogPosts(response.data);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching posts:', err);
+        setError('Failed to load blog posts. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPosts();
+  }, []);
 
   const navigation = [
     { name: 'Home', id: 'home' },
@@ -75,7 +98,16 @@ const App = () => {
     </nav>
   );
 
-  const HomePage = () => (
+  const HomePage = () => {
+    if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-xl text-gray-600">Loading...</p>
+      </div>
+    );
+  }
+
+  return (
     <div>
       <section className="bg-gradient-to-br from-slate-900 via-slate-800 to-cyan-900 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -168,8 +200,51 @@ const App = () => {
           </div>
         </div>
       </section>
+
+  <section className="py-16 bg-white">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="grid md:grid-cols-2 gap-12 items-center">
+      <div>
+        <h2 className="text-3xl font-bold mb-6">Latest from Our Blog</h2>
+        {blogPosts.length > 0 ? (
+          <>
+            <h3 className="text-2xl font-semibold mb-4 text-cyan-400">
+              {blogPosts[0].title}
+            </h3>
+            <p className="text-cyan-300 mb-4">
+              {blogPosts[0].excerpt}
+            </p>
+            <p className="text-gray-400 text-sm mb-6">
+              {new Date(blogPosts[0].createdAt).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}
+            </p>
+            <button 
+              onClick={() => setCurrentPage('blog')}
+              className="text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-2"
+            >
+              Read Full Article <ChevronRight size={20} />
+            </button>
+          </>
+        ) : (
+          <p className="text-gray-300">Loading latest posts...</p>
+        )}
+      </div>
+      <div className="bg-gradient-to-br from-cyan-600 to-cyan-800 p-8 rounded-lg shadow-xl">
+        <div className="text-center">
+          <Shield className="h-24 w-24 text-white mx-auto mb-4 opacity-90" />
+          <h3 className="text-2xl font-bold mb-2">Sellam Online</h3>
+          <p className="text-cyan-100">A new standard for secure online commerce in Africa</p>
+        </div>
+      </div>
     </div>
-  );
+  </div>
+</section>
+    </div>
+  )
+};
 
   const AboutPage = () => (
     <div className="py-16 bg-white">
@@ -287,27 +362,7 @@ const App = () => {
   );
 
   const BlogPage = () => {
-    const blogPosts = [
-      {
-        title: "Why Security Cannot Be an Afterthought in African Tech",
-        date: "January 15, 2026",
-        excerpt: "As Africa's digital economy booms, we must build security into the foundation of every product, not bolt it on later.",
-        category: "Security"
-      },
-      {
-        title: "Building Trust in Online Marketplaces",
-        date: "January 8, 2026",
-        excerpt: "The challenges of creating safe trading environments and the technical solutions that make them possible.",
-        category: "Product Development"
-      },
-      {
-        title: "The State of Cybersecurity in West Africa",
-        date: "December 28, 2025",
-        excerpt: "An analysis of current threats, vulnerabilities, and what businesses need to do to protect themselves.",
-        category: "Industry Insights"
-      }
-    ];
-
+  if (loading) {
     return (
       <div className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -315,34 +370,80 @@ const App = () => {
           <p className="text-xl text-gray-600 mb-12">
             Insights on security, technology, and building better digital products for Africa.
           </p>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {blogPosts.map((post, index) => (
-              <article key={index} className="bg-gray-50 rounded-lg overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow">
-                <div className="p-6">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="bg-cyan-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
-                      {post.category}
-                    </span>
-                    <span className="text-sm text-gray-500">{post.date}</span>
-                  </div>
-                  <h3 className="text-xl font-bold mb-3 text-slate-900">{post.title}</h3>
-                  <p className="text-gray-600 mb-4">{post.excerpt}</p>
-                  <button className="text-cyan-600 hover:text-cyan-700 font-semibold flex items-center gap-1">
-                    Read More <ChevronRight size={16} />
-                  </button>
-                </div>
-              </article>
-            ))}
-          </div>
-
-          <div className="mt-12 text-center">
-            <p className="text-gray-500">More articles coming soon. Check back regularly for updates.</p>
+          <div className="text-center py-12">
+            <p className="text-gray-500">Loading blog posts...</p>
           </div>
         </div>
       </div>
     );
-  };
+  }
+
+  if (error) {
+    return (
+      <div className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h1 className="text-4xl font-bold mb-8 text-slate-900">Blog</h1>
+          <div className="text-center py-12">
+            <p className="text-red-600">{error}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (blogPosts.length === 0) {
+    return (
+      <div className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h1 className="text-4xl font-bold mb-8 text-slate-900">Blog</h1>
+          <p className="text-xl text-gray-600 mb-12">
+            Insights on security, technology, and building better digital products for Africa.
+          </p>
+          <div className="text-center py-12">
+            <p className="text-gray-500">No blog posts yet. Check back soon!</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="py-16 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 className="text-4xl font-bold mb-8 text-slate-900">Blog</h1>
+        <p className="text-xl text-gray-600 mb-12">
+          Insights on security, technology, and building better digital products for Africa.
+        </p>
+        
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {blogPosts.map((post) => (
+            <article key={post._id} className="bg-gray-50 rounded-lg overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow">
+              <div className="p-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="bg-cyan-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                    {post.category}
+                  </span>
+                  <span className="text-sm text-gray-500">
+                    {new Date(post.createdAt).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </span>
+                </div>
+                <h3 className="text-xl font-bold mb-3 text-slate-900">{post.title}</h3>
+                <p className="text-gray-600 mb-4">{post.excerpt}</p>
+                <button className="text-cyan-600 hover:text-cyan-700 font-semibold flex items-center gap-1">
+                  Read More <ChevronRight size={16} />
+                </button>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
 
   const ContactPage = () => {
     const [formData, setFormData] = useState({
@@ -352,14 +453,26 @@ const App = () => {
       message: ''
     });
 
-    const handleSubmit = () => {
-      if (!formData.name || !formData.email || !formData.subject || !formData.message) {
-        alert('Please fill in all fields');
-        return;
-      }
-      alert('Thank you for your message. We will get back to you soon!');
-      setFormData({ name: '', email: '', subject: '', message: '' });
-    };
+    const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async () => {
+  if (!formData.name || !formData.email || !formData.subject || !formData.message) {
+    alert('Please fill in all fields');
+    return;
+  }
+
+  try {
+    setSubmitting(true);
+    await contactAPI.submit(formData);
+    alert('Thank you for your message. We will get back to you soon!');
+    setFormData({ name: '', email: '', subject: '', message: '' });
+  } catch (err) {
+    console.error('Error submitting form:', err);
+    alert('There was an error submitting your message. Please try again.');
+  } finally {
+    setSubmitting(false);
+  }
+  };
 
     return (
       <div className="py-16 bg-gray-50">
@@ -438,10 +551,10 @@ const App = () => {
                 </div>
                 <button
                   onClick={handleSubmit}
-                  className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 rounded-lg transition-colors"
-                >
-                  Send Message
-                </button>
+                  disabled={submitting}
+                  className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                  {submitting ? 'Sending...' : 'Send Message'}
+                  </button>
               </div>
             </div>
           </div>
