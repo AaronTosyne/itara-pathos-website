@@ -46,7 +46,10 @@ useEffect(() => {
     <nav className="bg-slate-900 text-white sticky top-0 z-50 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <div className="flex items-center space-x-2 cursor-pointer" onClick={() => setCurrentPage('home')}>
+          <div className="flex items-center space-x-2 cursor-pointer" onClick={() => {
+            setCurrentPage('home');
+            setSelectedPost(null);
+          }}>
             <img src="/logo.png" alt="Itara Pathos IT Logo" className="h-24 w-24 object-contain" />
             <div>
               <h1 className="text-xl font-bold">Itara Pathos IT</h1>
@@ -58,7 +61,12 @@ useEffect(() => {
             {navigation.map(item => (
               <button
                 key={item.id}
-                onClick={() => setCurrentPage(item.id)}
+                onClick={() => {
+                  setCurrentPage(item.id);
+                  if (item.id === 'blog') {
+                    setSelectedPost(null);
+                  }
+                }}
                 className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                   currentPage === item.id 
                     ? 'bg-cyan-600 text-white' 
@@ -88,6 +96,9 @@ useEffect(() => {
                 onClick={() => {
                   setCurrentPage(item.id);
                   setMobileMenuOpen(false);
+                  if (item.id === 'blog') {
+                    setSelectedPost(null);
+                  }
                 }}
                 className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium ${
                   currentPage === item.id 
