@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Shield, Lock, Globe, ChevronRight, Mail, Phone, MapPin, Menu, X, Code, Users, Target, Award } from 'lucide-react';
 import { postsAPI, contactAPI } from './services/api';
+import AdminLogin from './components/admin/AdminLogin';
+import AdminDashboard from './components/admin/AdminDashboard';
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState('home');
@@ -9,6 +11,8 @@ const App = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedPost, setSelectedPost] = useState(null);
+  const [adminUser, setAdminUser] = useState(null);
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
 
   // Scroll to top when page changes
 useEffect(() => {
@@ -34,12 +38,58 @@ useEffect(() => {
     fetchPosts();
   }, []);
 
+  // Check for existing admin session
+  useEffect(() => {
+    const storedToken = localStorage.getItem('adminToken');
+    const storedUser = localStorage.getItem('adminUser');
+    
+    if (storedToken && storedUser) {
+      setAdminUser(JSON.parse(storedUser));
+      setIsAdminLoggedIn(true);
+    }
+  }, []);
+
+  // Secret admin access shortcut (Ctrl+Shift+A)
+useEffect(() => {
+  const handleKeyPress = (e) => {
+    // Ctrl+Shift+A or Cmd+Shift+A (Mac)
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'A') {
+      e.preventDefault();
+      setCurrentPage('admin');
+    }
+  };
+
+  window.addEventListener('keydown', handleKeyPress);
+  return () => window.removeEventListener('keydown', handleKeyPress);
+}, []);
+
+// Handle direct URL access to admin
+useEffect(() => {
+  const currentHash = window.location.hash.substring(1); // Remove the #
+  if (currentHash === 'admin' || currentHash === 'admin-dashboard') {
+    setCurrentPage('admin');
+  }
+}, []);
+ 
+  // Handle Admin Logout
+  const handleAdminLogin = (userData) => {
+  setAdminUser(userData);
+  setIsAdminLoggedIn(true);
+  setCurrentPage('admin-dashboard');
+};
+
+  const handleAdminLogout = () => {
+  setAdminUser(null);
+  setIsAdminLoggedIn(false);
+  setCurrentPage('home');
+};
+
   const navigation = [
     { name: 'Home', id: 'home' },
     { name: 'About Us', id: 'about' },
     { name: 'Projects', id: 'projects' },
     { name: 'Blog', id: 'blog' },
-    { name: 'Contact', id: 'contact' }
+    { name: 'Contact', id: 'contact' },
   ];
 
   const NavigationBar = () => (
@@ -635,6 +685,14 @@ useEffect(() => {
         </div>
         <div className="border-t border-slate-800 pt-8 text-center text-gray-400 text-sm">
           <p>&copy; 2026 Itara Pathos IT Nig Ltd. All rights reserved.</p>
+          {/* Hidden admin link - looks like a dot */}
+          <button 
+            onClick={() => setCurrentPage('admin')}
+            className="text-slate-800 hover:text-cyan-400 text-xs mt-2"
+            aria-label="Admin"
+          >
+            •
+          </button>
         </div>
       </div>
     </footer>
@@ -726,6 +784,14 @@ const renderPage = () => {
     case 'blog': return <BlogPage />;
     case 'blog-detail': return selectedPost ? <BlogPostDetail post={selectedPost} /> : <BlogPage />;
     case 'contact': return <ContactPage />;
+    case 'admin': 
+      return isAdminLoggedIn 
+        ? <AdminDashboard user={adminUser} onLogout={handleAdminLogout} />
+        : <AdminLogin onLogin={handleAdminLogin} />;
+    case 'admin-dashboard':
+      return isAdminLoggedIn 
+        ? <AdminDashboard user={adminUser} onLogout={handleAdminLogout} />
+        : <AdminLogin onLogin={handleAdminLogin} />;
     default: return <HomePage />;
   }
 };
