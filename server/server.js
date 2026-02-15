@@ -31,11 +31,13 @@ app.use(express.json());
 const postRoutes = require('./routes/posts');
 const contactRoutes = require('./routes/contact');
 const authRoutes = require('./routes/auth');
+const uploadRoutes = require('./routes/upload');
 
 // Mount routes
 app.use('/api/posts', postRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // Test route
 app.get('/', (req, res) => {
