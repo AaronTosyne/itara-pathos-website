@@ -273,13 +273,66 @@ const CreatePostForm = ({ token, onSuccess, onCancel }) => {
     title: '',
     content: '',
     excerpt: '',
+    featuredImage: '',
     category: 'Security',
     published: true
   });
+  const [imagePreview, setImagePreview] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+
+  const handleImageUpload = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  // Check file size (max 5MB)
+  if (file.size > 5 * 1024 * 1024) {
+    alert('Image size should be less than 5MB');
+    return;
+  }
+
+  // Show loading state
+  setImagePreview('uploading');
+
+  try {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    const response = await fetch('http://localhost:5000/api/upload', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+      body: formData
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      setFormData(prev => ({ ...prev, featuredImage: data.data.url }));
+      setImagePreview(data.data.url);
+    } else {
+      throw new Error(data.error);
+    }
+  } catch (error) {
+    console.error('Upload error:', error);
+    alert('Error uploading image: ' + error.message);
+    setImagePreview(null);
+  }
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // DEBUG: Log everything
+    console.log('=== FORM SUBMIT DEBUG ===');
+    console.log('Form Data:', formData);
+    console.log('Title:', formData.title);
+    console.log('Content:', formData.content);
+    console.log('Excerpt:', formData.excerpt);
+    console.log('Category:', formData.category);
+    console.log('Token:', token);
+    console.log('=========================');
+
     setSubmitting(true);
 
     try {
@@ -297,7 +350,7 @@ const CreatePostForm = ({ token, onSuccess, onCancel }) => {
     <div className="bg-white shadow rounded-lg p-6">
       <h2 className="text-2xl font-bold text-gray-900 mb-6">Create New Blog Post</h2>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="space-y-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Title *
@@ -311,6 +364,26 @@ const CreatePostForm = ({ token, onSuccess, onCancel }) => {
             placeholder="Enter post title"
           />
         </div>
+
+            <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-600"
+            />
+            {imagePreview === 'uploading' && (
+            <p className="text-sm text-gray-600 mt-2">Uploading image...</p>
+            )}
+            {imagePreview && imagePreview !== 'uploading' && (
+            <div className="mt-4">
+                <p className="text-sm text-gray-600 mb-2">Image Preview:</p>
+                <img 
+                src={imagePreview} 
+                alt="Preview" 
+                className="max-w-md rounded-lg shadow-lg"
+                />
+            </div>
+            )}     
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -372,13 +445,14 @@ const CreatePostForm = ({ token, onSuccess, onCancel }) => {
         </div>
 
         <div className="flex gap-4">
-          <button
-            type="submit"
+            <button
+            type="button"
+            onClick={handleSubmit}
             disabled={submitting}
             className="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-2 rounded-lg disabled:opacity-50"
-          >
+            >
             {submitting ? 'Creating...' : 'Create Post'}
-          </button>
+            </button>
           <button
             type="button"
             onClick={onCancel}
@@ -387,7 +461,7 @@ const CreatePostForm = ({ token, onSuccess, onCancel }) => {
             Cancel
           </button>
         </div>
-      </form>
+      </div>
     </div>
   );
 };

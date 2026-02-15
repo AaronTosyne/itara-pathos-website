@@ -3,12 +3,20 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 // Helper function for API calls
 const apiCall = async (endpoint, options = {}) => {
   try {
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(options.headers || {}),
+    };
+
+    console.log('=== API CALL DEBUG ===');
+    console.log('Endpoint:', endpoint);
+    console.log('Method:', options.method || 'GET');
+    console.log('Headers:', headers);
+    console.log('=====================');
+
     const response = await fetch(`${API_URL}${endpoint}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
       ...options,
+      headers: headers,
     });
 
     const data = await response.json();
@@ -35,15 +43,18 @@ export const postsAPI = {
   // Get post by slug
   getBySlug: (slug) => apiCall(`/api/posts/slug/${slug}`),
 
-  // Create new post (admin only)
-  create: (postData, token) =>
-    apiCall('/api/posts', {
+    // Create new post (admin only)
+  create: (postData, token) => {
+    console.log('postsAPI.create called with:', { postData, token: token ? 'exists' : 'missing' });
+    
+    return apiCall('/api/posts', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(postData),
-    }),
+    });
+  },
 
   // Update post (admin only)
   update: (id, postData, token) =>

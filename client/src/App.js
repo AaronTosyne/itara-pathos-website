@@ -488,6 +488,13 @@ useEffect(() => {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {blogPosts.map((post) => (
             <article key={post._id} className="bg-gray-50 rounded-lg overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow">
+              {post.featuredImage && (
+                <img 
+                  src={post.featuredImage} 
+                  alt={post.title}
+                  className="w-full h-48 object-cover"
+                />
+              )}
               <div className="p-6">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="bg-cyan-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
@@ -737,6 +744,17 @@ const BlogPostDetail = ({ post }) => {
         <p className="text-gray-600 mb-8">
           By {post.author || 'Itara Pathos IT'}
         </p>
+
+        {/* Featured Image */}
+        {post.featuredImage && (
+          <div className="mb-8">
+            <img 
+              src={post.featuredImage} 
+              alt={post.title}
+              className="w-full rounded-lg shadow-lg"
+            />
+          </div>
+        )}
 
         {/* Divider */}
         <hr className="border-gray-200 mb-8" />
