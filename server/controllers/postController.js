@@ -99,13 +99,27 @@ exports.getPostBySlug = async (req, res) => {
 // @access  Private (Admin only)
 exports.createPost = async (req, res) => {
   try {
+    console.log('=== CREATE POST REQUEST ===');
+    console.log('Full Body:', req.body);
+    console.log('Title:', req.body.title);
+    console.log('Content:', req.body.content);
+    console.log('Excerpt:', req.body.excerpt);
+    console.log('Category:', req.body.category);
+    console.log('Featured Image:', req.body.featuredImage); // Check this!
+    console.log('Published:', req.body.published);
+    console.log('=========================');
+    
     const post = await Post.create(req.body);
+
+    console.log('Post created:', post);
+    console.log('Post featured image:', post.featuredImage);
 
     res.status(201).json({
       success: true,
       data: post
     });
   } catch (error) {
+    console.error('Error creating post:', error.message);
     res.status(400).json({
       success: false,
       error: error.message
