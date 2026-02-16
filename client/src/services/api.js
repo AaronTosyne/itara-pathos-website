@@ -8,11 +8,23 @@ const apiCall = async (endpoint, options = {}) => {
       ...(options.headers || {}),
     };
 
-    console.log('=== API CALL DEBUG ===');
+    console.log('=== apiCall Function ===');
     console.log('Endpoint:', endpoint);
     console.log('Method:', options.method || 'GET');
     console.log('Headers:', headers);
-    console.log('=====================');
+    console.log('Body (raw):', options.body);
+    
+    // Parse body to check contents
+    if (options.body) {
+      try {
+        const parsedBody = JSON.parse(options.body);
+        console.log('Parsed body:', parsedBody);
+        console.log('featuredImage in body:', parsedBody.featuredImage);
+      } catch (e) {
+        console.log('Could not parse body');
+      }
+    }
+    console.log('=======================');
 
     const response = await fetch(`${API_URL}${endpoint}`, {
       ...options,
@@ -44,17 +56,22 @@ export const postsAPI = {
   getBySlug: (slug) => apiCall(`/api/posts/slug/${slug}`),
 
     // Create new post (admin only)
-  create: (postData, token) => {
-    console.log('postsAPI.create called with:', { postData, token: token ? 'exists' : 'missing' });
-    
-    return apiCall('/api/posts', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(postData),
-    });
-  },
+create: (postData, token) => {
+  console.log('=== postsAPI.create ===');
+  console.log('postData received:', postData);
+  console.log('postData.featuredImage:', postData.featuredImage);
+  console.log('Stringified body:', JSON.stringify(postData));
+  console.log('======================');
+  
+  return apiCall('/api/posts', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(postData),
+  });
+},
 
   // Update post (admin only)
   update: (id, postData, token) =>

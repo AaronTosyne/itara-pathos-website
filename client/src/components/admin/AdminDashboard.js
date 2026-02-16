@@ -273,66 +273,39 @@ const CreatePostForm = ({ token, onSuccess, onCancel }) => {
     title: '',
     content: '',
     excerpt: '',
-    featuredImage: '',
     category: 'Security',
-    published: true
+    published: true,
+    featuredImage: ''
   });
   const [imagePreview, setImagePreview] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
-  const handleImageUpload = async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-  // Check file size (max 5MB)
-  if (file.size > 5 * 1024 * 1024) {
-    alert('Image size should be less than 5MB');
-    return;
-  }
-
-  // Show loading state
-  setImagePreview('uploading');
-
-  try {
-    const formData = new FormData();
-    formData.append('image', file);
-
-    const response = await fetch('http://localhost:5000/api/upload', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`
-      },
-      body: formData
-    });
-
-    const data = await response.json();
-
-    if (data.success) {
-      setFormData(prev => ({ ...prev, featuredImage: data.data.url }));
-      setImagePreview(data.data.url);
-    } else {
-      throw new Error(data.error);
+    if (file.size > 1 * 1024 * 1024) {
+      alert('Image size should be less than 1MB for Base64');
+      return;
     }
-  } catch (error) {
-    console.error('Upload error:', error);
-    alert('Error uploading image: ' + error.message);
-    setImagePreview(null);
-  }
-};
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setFormData(prev => ({ ...prev, featuredImage: reader.result }));
+      setImagePreview(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
+    
+    if (!formData.title.trim() || !formData.excerpt.trim() || !formData.content.trim()) {
+      alert('Please fill in all required fields');
+      return;
+    }
 
-    // DEBUG: Log everything
-    console.log('=== FORM SUBMIT DEBUG ===');
-    console.log('Form Data:', formData);
-    console.log('Title:', formData.title);
-    console.log('Content:', formData.content);
-    console.log('Excerpt:', formData.excerpt);
-    console.log('Category:', formData.category);
-    console.log('Token:', token);
-    console.log('=========================');
-
+    console.log('Submitting:', formData);
     setSubmitting(true);
 
     try {
@@ -340,6 +313,7 @@ const CreatePostForm = ({ token, onSuccess, onCancel }) => {
       alert('Post created successfully!');
       onSuccess();
     } catch (error) {
+      console.error('Error:', error);
       alert('Error creating post: ' + error.message);
     } finally {
       setSubmitting(false);
@@ -352,62 +326,59 @@ const CreatePostForm = ({ token, onSuccess, onCancel }) => {
 
       <div className="space-y-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Title *
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Title *</label>
           <input
             type="text"
-            required
             value={formData.title}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+            onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-600"
             placeholder="Enter post title"
           />
         </div>
 
-            <input
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Featured Image (Optional)</label>
+          <input
             type="file"
             accept="image/*"
-            onChange={handleImageUpload}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-600"
-            />
-            {imagePreview === 'uploading' && (
-            <p className="text-sm text-gray-600 mt-2">Uploading image...</p>
-            )}
-            {imagePreview && imagePreview !== 'uploading' && (
+            onChange={handleImageChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+          />
+          {imagePreview && (
             <div className="mt-4">
-                <p className="text-sm text-gray-600 mb-2">Image Preview:</p>
-                <img 
-                src={imagePreview} 
-                alt="Preview" 
-                className="max-w-md rounded-lg shadow-lg"
-                />
+              <img src={imagePreview} alt="Preview" className="max-w-md rounded-lg shadow-lg" />
+              <button
+                type="button"
+                onClick={() => {
+                  setFormData(prev => ({ ...prev, featuredImage: '' }));
+                  setImagePreview(null);
+                }}
+                className="mt-2 text-red-600 hover:text-red-800 text-sm"
+              >
+                Remove Image
+              </button>
             </div>
-            )}     
+          )}
+        </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Excerpt (Short Summary) *
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Excerpt *</label>
           <textarea
-            required
             value={formData.excerpt}
-            onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
+            onChange={(e) => setFormData(prev => ({ ...prev, excerpt: e.target.value }))}
             rows="3"
             maxLength="300"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-600"
             placeholder="Brief summary (max 300 characters)"
           />
-          <p className="text-xs text-gray-500 mt-1">{formData.excerpt.length}/300 characters</p>
+          <p className="text-xs text-gray-500 mt-1">{formData.excerpt.length}/300</p>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Category *
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Category *</label>
           <select
             value={formData.category}
-            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+            onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-600"
           >
             <option value="Security">Security</option>
@@ -418,16 +389,13 @@ const CreatePostForm = ({ token, onSuccess, onCancel }) => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Content *
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Content *</label>
           <textarea
-            required
             value={formData.content}
-            onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+            onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
             rows="15"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-600 font-mono text-sm"
-            placeholder="Write your blog post content here. Use double line breaks for paragraphs."
+            placeholder="Write your blog post content here"
           />
         </div>
 
@@ -436,7 +404,7 @@ const CreatePostForm = ({ token, onSuccess, onCancel }) => {
             type="checkbox"
             id="published"
             checked={formData.published}
-            onChange={(e) => setFormData({ ...formData, published: e.target.checked })}
+            onChange={(e) => setFormData(prev => ({ ...prev, published: e.target.checked }))}
             className="h-4 w-4 text-cyan-600 focus:ring-cyan-500 border-gray-300 rounded"
           />
           <label htmlFor="published" className="ml-2 block text-sm text-gray-900">
@@ -445,17 +413,16 @@ const CreatePostForm = ({ token, onSuccess, onCancel }) => {
         </div>
 
         <div className="flex gap-4">
-            <button
-            type="button"
+          <button
             onClick={handleSubmit}
             disabled={submitting}
             className="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-2 rounded-lg disabled:opacity-50"
-            >
+          >
             {submitting ? 'Creating...' : 'Create Post'}
-            </button>
+          </button>
           <button
-            type="button"
             onClick={onCancel}
+            disabled={submitting}
             className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-2 rounded-lg"
           >
             Cancel
