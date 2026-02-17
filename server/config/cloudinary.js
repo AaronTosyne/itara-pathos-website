@@ -15,7 +15,7 @@ const storage = new CloudinaryStorage({
   params: {
     folder: 'itara-pathos-blog',
     allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
-    transformation: [{ width: 1200, height: 675, crop: 'limit' }]
+    transformation: [{ width: 1200, height: 675, crop: 'limit', quality: 'auto' }]
   }
 });
 

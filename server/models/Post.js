@@ -33,10 +33,15 @@ const postSchema = new mongoose.Schema(
     slug: {
       type: String,
       unique: true
+    },
+    featuredImage: {
+      type: String,
+      default: ''
     }
   },
   {
-    timestamps: true // Automatically adds createdAt and updatedAt fields
+    timestamps: true,
+    strict: false  // This allows additional fields
   }
 );
 
@@ -50,7 +55,7 @@ postSchema.pre('save', function(next) {
       .replace(/-+/g, '-')
       .trim();
   }
-  // next();
+  //next();
 });
 
 module.exports = mongoose.model('Post', postSchema);
