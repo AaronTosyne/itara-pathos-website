@@ -279,22 +279,63 @@ const CreatePostForm = ({ token, onSuccess, onCancel }) => {
   });
   const [imagePreview, setImagePreview] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
-  const handleImageChange = (e) => {
+  const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    if (file.size > 1 * 1024 * 1024) {
-      alert('Image size should be less than 1MB for Base64');
+    // Validate file size
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image size should be less than 5MB');
       return;
     }
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setFormData(prev => ({ ...prev, featuredImage: reader.result }));
-      setImagePreview(reader.result);
-    };
-    reader.readAsDataURL(file);
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file');
+      return;
+    }
+
+    console.log('Uploading to Cloudinary:', file.name);
+    setUploading(true);
+    setImagePreview('uploading');
+
+    try {
+      const uploadFormData = new FormData();
+      uploadFormData.append('image', file);
+
+      const response = await fetch('http://localhost:5000/api/upload', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: uploadFormData
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        const imageUrl = data.data.url;
+        console.log('Image uploaded successfully:', imageUrl);
+        
+        setFormData(prev => ({
+          ...prev,
+          featuredImage: imageUrl
+        }));
+        
+        setImagePreview(imageUrl);
+        alert('Image uploaded successfully!');
+      } else {
+        throw new Error(data.error || 'Upload failed');
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      alert('Error uploading image: ' + error.message);
+      setImagePreview(null);
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -305,7 +346,7 @@ const CreatePostForm = ({ token, onSuccess, onCancel }) => {
       return;
     }
 
-    console.log('Submitting:', formData);
+    console.log('Submitting post:', formData);
     setSubmitting(true);
 
     try {
@@ -325,6 +366,7 @@ const CreatePostForm = ({ token, onSuccess, onCancel }) => {
       <h2 className="text-2xl font-bold text-gray-900 mb-6">Create New Blog Post</h2>
 
       <div className="space-y-6">
+        {/* Title */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Title *</label>
           <input
@@ -336,31 +378,55 @@ const CreatePostForm = ({ token, onSuccess, onCancel }) => {
           />
         </div>
 
+        {/* Featured Image */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Featured Image (Optional)</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Featured Image (Optional)
+          </label>
           <input
             type="file"
             accept="image/*"
-            onChange={handleImageChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+            onChange={handleImageUpload}
+            disabled={uploading}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-600 disabled:opacity-50"
           />
-          {imagePreview && (
+          
+          {uploading && (
+            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-blue-700 text-sm">Uploading image to Cloudinary...</p>
+            </div>
+          )}
+          
+          {imagePreview && imagePreview !== 'uploading' && (
             <div className="mt-4">
-              <img src={imagePreview} alt="Preview" className="max-w-md rounded-lg shadow-lg" />
+              <p className="text-sm text-gray-600 mb-2">Image Preview:</p>
+              <img 
+                src={imagePreview} 
+                alt="Preview" 
+                className="max-w-md rounded-lg shadow-lg"
+              />
               <button
                 type="button"
                 onClick={() => {
                   setFormData(prev => ({ ...prev, featuredImage: '' }));
                   setImagePreview(null);
                 }}
-                className="mt-2 text-red-600 hover:text-red-800 text-sm"
+                className="mt-2 text-red-600 hover:text-red-800 text-sm font-medium"
               >
                 Remove Image
               </button>
+              <p className="text-xs text-gray-500 mt-2">
+                Stored on Cloudinary CDN
+              </p>
             </div>
           )}
+          
+          <p className="text-xs text-gray-500 mt-2">
+            Recommended: JPG or PNG, max 5MB. Images are automatically optimized.
+          </p>
         </div>
 
+        {/* Excerpt */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Excerpt *</label>
           <textarea
@@ -374,6 +440,7 @@ const CreatePostForm = ({ token, onSuccess, onCancel }) => {
           <p className="text-xs text-gray-500 mt-1">{formData.excerpt.length}/300</p>
         </div>
 
+        {/* Category */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Category *</label>
           <select
@@ -388,6 +455,7 @@ const CreatePostForm = ({ token, onSuccess, onCancel }) => {
           </select>
         </div>
 
+        {/* Content */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Content *</label>
           <textarea
@@ -395,10 +463,11 @@ const CreatePostForm = ({ token, onSuccess, onCancel }) => {
             onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
             rows="15"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-600 font-mono text-sm"
-            placeholder="Write your blog post content here"
+            placeholder="Write your blog post content here. Use double line breaks for paragraphs."
           />
         </div>
 
+        {/* Published */}
         <div className="flex items-center">
           <input
             type="checkbox"
@@ -412,18 +481,19 @@ const CreatePostForm = ({ token, onSuccess, onCancel }) => {
           </label>
         </div>
 
+        {/* Buttons */}
         <div className="flex gap-4">
           <button
             onClick={handleSubmit}
-            disabled={submitting}
-            className="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-2 rounded-lg disabled:opacity-50"
+            disabled={submitting || uploading}
+            className="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {submitting ? 'Creating...' : 'Create Post'}
           </button>
           <button
             onClick={onCancel}
-            disabled={submitting}
-            className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-2 rounded-lg"
+            disabled={submitting || uploading}
+            className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-2 rounded-lg disabled:opacity-50"
           >
             Cancel
           </button>

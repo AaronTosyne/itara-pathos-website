@@ -15,28 +15,44 @@ const App = () => {
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
 
   // Scroll to top when page changes
-useEffect(() => {
-  window.scrollTo(0, 0);
-}, [currentPage, selectedPost]);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [currentPage, selectedPost]);
 
   // Fetch blog posts when component mounts
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        setLoading(true);
-        const response = await postsAPI.getAll();
-        setBlogPosts(response.data);
-        setError(null);
-      } catch (err) {
-        console.error('Error fetching posts:', err);
-        setError('Failed to load blog posts. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
+useEffect(() => {
+  const fetchPosts = async () => {
+    try {
+      setLoading(true);
+      const response = await postsAPI.getAll();
+      
+      console.log('=== FETCHED POSTS ===');
+      console.log('Response:', response);
+      console.log('Number of posts:', response.data.length);
+      
+      // Log each post's image status
+      response.data.forEach((post, index) => {
+        console.log(`Post ${index + 1}: ${post.title}`);
+        console.log(`  - Has featuredImage:`, !!post.featuredImage);
+        console.log(`  - Image type:`, typeof post.featuredImage);
+        console.log(`  - Image length:`, post.featuredImage ? post.featuredImage.length : 0);
+        console.log(`  - Image preview:`, post.featuredImage ? post.featuredImage.substring(0, 50) + '...' : 'none');
+      });
+      
+      console.log('====================');
+      
+      setBlogPosts(response.data);
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching posts:', err);
+      setError('Failed to load blog posts. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchPosts();
-  }, []);
+  fetchPosts();
+}, []);
 
   // Check for existing admin session
   useEffect(() => {
@@ -488,12 +504,19 @@ useEffect(() => {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {blogPosts.map((post) => (
             <article key={post._id} className="bg-gray-50 rounded-lg overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow">
-              {post.featuredImage && (
-                <img 
-                  src={post.featuredImage} 
-                  alt={post.title}
-                  className="w-full h-48 object-cover"
-                />
+              {post.featuredImage && post.featuredImage.length > 0 && (
+                <div className="w-full h-48 overflow-hidden bg-gray-200">
+                  <img 
+                    src={post.featuredImage} 
+                    alt={post.title}
+                    className="w-full h-48 object-cover"
+                    onLoad={() => console.log('Thumbnail loaded for:', post.title)}
+                    onError={(e) => {
+                      console.error('Thumbnail failed for:', post.title);
+                      console.error('Image src preview:', post.featuredImage.substring(0, 100));
+                    }}
+                  />
+                </div>
               )}
               <div className="p-6">
                 <div className="flex items-center gap-2 mb-3">
@@ -746,12 +769,18 @@ const BlogPostDetail = ({ post }) => {
         </p>
 
         {/* Featured Image */}
-        {post.featuredImage && (
+        {post.featuredImage && post.featuredImage.length > 0 && (
           <div className="mb-8">
             <img 
               src={post.featuredImage} 
               alt={post.title}
-              className="w-full rounded-lg shadow-lg"
+              className="w-full max-h-96 object-cover rounded-lg shadow-lg"
+              onLoad={() => console.log('Image loaded successfully for:', post.title)}
+              onError={(e) => {
+                console.error('Image failed to load for:', post.title);
+                console.error('Image src:', post.featuredImage.substring(0, 100));
+                console.error('Error:', e);
+              }}
             />
           </div>
         )}
