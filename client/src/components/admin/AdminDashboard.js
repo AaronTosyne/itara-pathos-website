@@ -305,7 +305,8 @@ const CreatePostForm = ({ token, onSuccess, onCancel }) => {
       const uploadFormData = new FormData();
       uploadFormData.append('image', file);
 
-      const response = await fetch('http://localhost:5000/api/upload', {
+        const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+        const response = await fetch(`${API_URL}/api/upload`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
