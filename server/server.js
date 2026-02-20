@@ -51,7 +51,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/upload', uploadRoutes);
 
 // Root route
-app.get('/', (req, res) => {
+app.use('/{*path}', (req, res) => {
   res.json({ 
     message: 'Itara Pathos IT API is running',
     version: '1.0.0',
