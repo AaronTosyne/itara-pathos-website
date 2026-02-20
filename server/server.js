@@ -16,6 +16,9 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:3000',
   process.env.CLIENT_URL,
+  'itara-pathos-website-client-uie4-ffr74vqbl.vercel.app',
+  'https://itarapathos.com', 
+  'https://www.itarapathos.com'
 ].filter(Boolean); // Remove undefined values
 
 app.use(cors({
