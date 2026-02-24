@@ -57,7 +57,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/upload', uploadRoutes);
 
 // Root route
-app.use('/{*path}', (req, res) => {
+app.get('/{*path}', (req, res) => {
   res.json({ 
     message: 'Itara Pathos IT API is running',
     version: '1.0.0',
@@ -66,7 +66,7 @@ app.use('/{*path}', (req, res) => {
 });
 
 // Handle undefined routes
-app.use('*', (req, res) => {
+app.use((req, res) => {
   res.status(404).json({
     success: false,
     error: 'Route not found'
