@@ -17,7 +17,9 @@ const allowedOrigins = [
   'http://localhost:3000',
   process.env.CLIENT_URL,
   'https://itara-pathos-website-client-uie4.vercel.app',
-  'https://itara-pathos-website-client-uie4-ffr74vqbl.vercel.app',
+  'https://itara-pathos-website-client-uie4-410e1wewd.vercel.app',
+  'https://itara-pathos.com',
+  'https://www.itara-pathos.com',
   'https://itarapathos.com',
   'https://www.itarapathos.com'
 ].filter(Boolean); // Remove undefined values
